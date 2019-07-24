@@ -148,17 +148,28 @@ The input type explains how options will be displayed.
 Also, the option input type says - is it possible to select several variants from one option.
 
 ```graphql
+enum OptionInputTypes {
+	DROP_DOWN
+	RADIO_BUTTONS
+	CHECKBOX
+	MULTIPLE_SELECT
+}
 
+interface InputTypeInterface {
+    option_id: ID
+	input_type : OptionInputTypes
+}
 ```
 
 ### Example: Simple product with Customizable Option.
 
 Currently we have enough information to figure out declaration of a classic customizable option.
 ```graphql
-type CustomizalbeOption implements OptionInterface{
+type CustomizalbeOption implements OptionInterface, InputTypeInterface {
     option_id: ID
 	title : String!
 	is_required : Boolean!
+	input_type : OptionInputTypes
 	variants : [CustomizalbeVariant!]!
 }
 
@@ -171,140 +182,10 @@ type CustomizalbeVariant implements PriceVariantInterface, ProductVariantInterfa
 }
 ```
 
---------
+### Example: Bundle Product
 
 
-
-Each option variant should know about possible price change that affects product price if the option selected.
-
-As an optional benefit, it is good to have an SKU of each variant. If the variant has SKU we can recover additional info for this option like inventory record.
-
-An option has to expose the display settings to tell storefront how it should be rendered.
+### Example: Downloadable Product
 
 
-
-
-```graphql
-{
-  "averageOptions":
-  [
-    {
-      "title": "Fabric",
-      "is_required": true,
-      "variants" : [
-        {
-          "title": "cotton",
-          "sku": "cotton-item",
-          "price": {
-            "value": {
-              "amount": 10.00,
-              "currency": "USD"
-            },
-            "adjustment" : {
-              "value" : {
-                "amount": 0.80,
-                "currency": "USD" 
-              }
-            }
-          }
-        },
-        {
-          "title": "polyester",
-          "sku": "polyester-item",
-          "price": {
-            "value": {
-              "amount": 10.00,
-              "currency": "USD"
-            },
-            "adjustment" : {
-              "value" : {
-                "amount": 0.80,
-                "currency": "USD" 
-              }
-            }
-          }
-        }
-      ]
-    }
-  ]
-}
-```
-
-
-Let's describe these structures with GrapQL syntax for better visibility.
-```graphql
-enum DisplayOption{
-	DROP_DOWN
-	RADIO_BUTTONS
-	CHECKBOX
-	MULTIPLE_SELECT
-}
-
-interface VariantInterface{
-    variant_id: ID
-	title : String!
-## 	sku : String
-##	price : Price
-}
-
-interface ProductOptionInterface{
-    option_id: ID
-	title : String!
-	is_required : Boolean!
-	display_option : DisplayOption!
-	variants : [OptionVariantInterface!]!
-}
-```
-
-
-the beauty of this option is the extensibility perspective.
-For instance, if we want to express a downloadable option through this schema, we have to extend it 
-with a single additional attribute - sample link.
-
-```graphql
-interface DownloadableVariant implements ProductVariant{
-	title : String!
-	sku : String
-	price : Price
-	sample_link : String
-}
-```
-In case we need to render options for bundle product it is enough to filter options by stock availability.
-
-
-### Configurable option
-The configurable product also can expose its options through the common interface.
-The option should contain an additional field SKU to search the particular simple product which represents buyer selections.
-
-Configurable product contains both configurable options and configurable variants matrix.
-Options contain attributes labels and values that were used for configurable product creation.
-Variants matrix consist of simple products that represent different combinations of the attributes that the product has as configurable options.
-
-```graphql
-type ConfigurableOptionVariant implements ProductOptionVariant{
-	title : String!
-	sku : String
-	price : Price
-	attribute_value : String
-}
-```
-
-```graphql
-type ProductVariant{
-	unique_attribute : [Attribute!]
-	sku : String!
-	price_range : PriceRange!
-}
-
-
-```
-
-### Adding product to cart 
-
-
----------------------------------------------------------
-
-
-
-
-
+### Example: Configurable Product
