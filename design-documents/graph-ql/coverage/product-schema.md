@@ -498,7 +498,6 @@ schema{
 ### One query to rule them all
 
 ```graphql
-query
 {
   products {
     product_id
@@ -564,25 +563,25 @@ query
       ... on InputTypeInterface {
         input_type
       }
-			... on VariantOptionInterface {
-              variants {
-        variant_id
-        title
-        ... on PriceVariantInterface {
-          price {
-            value {
-              amount
-              currency
+      ... on VariantOptionInterface {
+        variants {
+          variant_id
+          title
+          ... on PriceVariantInterface {
+            price {
+              value {
+                amount
+                currency
+              }
             }
           }
+          ... on ProductVariantInterface {
+            reference_id
+          }
+          ... on DownloadableVariant {
+            sample_link
+          }
         }
-        ... on ProductVariantInterface {
-          reference_id
-        }
-        ... on DownloadableVariant {
-          sample_link
-        }
-      }
       }
     }
   }
